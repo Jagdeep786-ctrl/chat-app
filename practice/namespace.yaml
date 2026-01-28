@@ -1,0 +1,10 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: nginx
+
+  # kubectl apply -f namespace.yaml
+  # another way to create ns : kubectl create ns nginx
+# kubectl delete ns nameof namespace
+  # group of resources called namespace:-  see below
+   # docker in container --> pod ---> deployment ---> service ---> user

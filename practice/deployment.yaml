@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  namespace: nginx
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      name: nginx-dep-pod
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
+
+        volumeMounts:
+        - mountPath: /var/www/html
+          name: my-volume
+      volumes:
+        - name: my-volume
+          persistentVolumeClaim:
+            claimName: local-pvc
+
+
+# kubectl apply -f deployment.yaml
+
+# kubectl get deployment -n nginx
+
+# kubectl get deployment nameofdeployment -n nginx -o yaml(see about status of depl. / replicas / container)
+
+# kubectl get pods -n nginx     
+
+# kubectl get pods -n nginx  -o wide  (you see pods are assigning to which node) 
+
+# kubectl scale deployment/nginx-deployment -n nginx --replicas =5 (if traffic increase then it replicas  increase to 5)
+
+# kubectl set image deployment/nginx-deployment -n nginx nginx=nginx:1.27( for set image to particular version)
+
+# kubectl delete -f deployment.yml
+
+# Rolling update means when we try to update the pod that time , sara kuch ik var ch ni update hunda , pela ik container update hou fr dusra fr tisra (one image is going down to pull the image from internet , but baki image chal rhiya that time) 

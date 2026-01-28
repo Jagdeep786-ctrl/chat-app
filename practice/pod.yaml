@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+  namespace: nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx:latest
+    ports:
+    - containerPort: 80
+
+
+# kubectl get pods -n nginx
+# kubectl exec -it  nameofpod  -n nginx --bash (to go inside pod , if there is error in pod , you can debug it)
+# ls
+# kubectl describe pod/nameofpod -n nginx ( you can check everything about container)
+# kubectl get pods -n nginx  -o wide  (you see pods are assigning to which node)  
+
+
+# kubectl run nameofpod  --image = nameofimage -n nginx
+# ex: kubectl run nginx --image = nginx -n nginx
+# kubectl delete pod nameofpod -n nginx

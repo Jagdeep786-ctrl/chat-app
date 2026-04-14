@@ -1,3 +1,5 @@
+#backend-deployment.yaml
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -12,25 +14,60 @@ spec:
   template:
     metadata:
       name: backend-pod
-      namespace: chat-app
       labels:
         app: backend
         
     spec:
+      serviceAccountName: aws-service-account-secret
       containers:
       - name: chatapp-backend
         image: jagdeep144/chatapp_backend:latest
         ports:
         - containerPort: 5001
         env:
-        - name: NODE_ENV
-          value: production
-        - name: MONGODB_URI
-          value: "mongodb://mongoadmin:secret@mongodb:27017/chatApp?authSource=admin&retryWrites=true&w=majority"
-        - name: JWT_SECRET
-          valueFrom: 
-            secretKeyRef:
-              name: chatapp-secret
-              key: jwt
-        - name: PORT 
-          value: "5001"
+          - name: NODE_ENV
+            value: production
+          - name: PORT 
+            value: "5001"   
+
+          - name: MONGODB_URI
+            valueFrom:
+              secretKeyRef:
+                name: chatapp-secret
+                key:   MONGODB_URI
+          
+        
+          - name: "JWT_SECRET"
+            valueFrom:
+              secretKeyRef:
+                name: chatapp-secret
+                key:  jwt
+           
+
+        volumeMounts:
+        - name:  secret-store-aws
+          mountPath: "/mnt/secrets" 
+          readOnly: true
+
+      volumes:     
+      - name: secret-store-aws
+        csi: 
+         driver: secrets-store.csi.k8s.io
+         readOnly: true
+         volumeAttributes:
+           secretProviderClass: "aws-secrets"
+
+
+
+        # env:
+        # - name: NODE_ENV
+        #   value: production
+        # - name: MONGODB_URI
+        #   value: "mongodb://mongoadmin:secret@mongodb:27017/chatApp?authSource=admin&retryWrites=true&w=majority"
+        # - name: JWT_SECRET
+        #   valueFrom: 
+        #     secretKeyRef:
+        #       name: chatapp-secret
+        #       key: jwt
+        # - name: PORT 
+        #   value: "5001"
